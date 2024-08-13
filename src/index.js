@@ -10,9 +10,10 @@ function createCard(cardLink, cardName, cardRemover) {
   cardElement.querySelector(".card__image").src = cardLink;
   cardElement.querySelector(".card__title").textContent = cardName;
 
-  const button = cardElement.querySelector(".card__delete-button");
-  button.addEventListener("click", function () {
+  const deleteButton = cardElement.querySelector(".card__delete-button");
+  deleteButton.addEventListener("click", function (evt) {
     cardRemover(cardElement);
+    evt.stopPropagation();
   });
 
   cardElement.addEventListener("click", function () {
@@ -43,11 +44,52 @@ buttonAdd.addEventListener("click", function () {
   popupNewCard.classList.add("popup_is-opened");
 });
 
-const popupCloseButtons = document.querySelectorAll('.popup__close');
-popupCloseButtons.forEach(function (button) {
-  button.addEventListener("click", function () {
-    popupEdit.classList.remove("popup_is-opened");
-    popupNewCard.classList.remove("popup_is-opened");
-    popupImage.classList.remove("popup_is-opened");
+const popups = document.querySelectorAll(".popup");
+popups.forEach(function(popup) {
+  popup.addEventListener("click", function(evt) {
+    if (evt.target === popup) {
+      popup.classList.remove("popup_is-opened");
+    };
+  });
+
+  const popupCloseButton = popup.querySelector(".popup__close");
+  popupCloseButton.addEventListener("click", function(evt) {
+    popup.classList.remove("popup_is-opened");
   });
 });
+
+document.addEventListener("keydown", function(evt) {
+  if (evt.key === 'Escape') {
+    popups.forEach(function(popup) {
+      popup.classList.remove("popup_is-opened");
+    });
+  }
+});
+
+// Находим форму в DOM
+const formElement = document.forms["edit-profile"];
+// Находим поля формы в DOM
+const nameInput = formElement.elements.name;
+const jobInput = formElement.elements.description;
+
+// Обработчик «отправки» формы, хотя пока
+// она никуда отправляться не будет
+function handleFormSubmit(evt) {
+  evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
+  // Так мы можем определить свою логику отправки.
+  // О том, как это делать, расскажем позже.
+
+  // Получите значение полей jobInput и nameInput из свойства value
+  const nameValue = nameInput.value;
+  const jobValue = jobInput.value;
+  // Выберите элементы, куда должны быть вставлены значения полей
+  const profileName = document.querySelector(".profile__title");
+  const profileJob = document.querySelector(".profile__description");
+  // Вставьте новые значения с помощью textContent
+  profileName.textContent = nameValue;
+  profileJob.textContent = jobValue;
+}
+
+// Прикрепляем обработчик к форме:
+// он будет следить за событием “submit” - «отправка»
+formElement.addEventListener("submit", handleFormSubmit);
