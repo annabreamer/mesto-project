@@ -29,10 +29,7 @@ function createCard(cardLink, cardName, cardRemover, cardClicker, likePutter) {
 function openImagePopup(cardLink, cardName) {
   popupImage.querySelector(".popup__image").src = cardLink;
   popupImage.querySelector(".popup__caption").textContent = cardName;
-  popupImage.classList.add("popup_is-animated");
-  setTimeout(function() {
-    popupImage.classList.add("popup_is-opened");
-  }, 0);
+  openModal(popupImage);
 }
 
 function putLike(evt) {
@@ -49,42 +46,44 @@ initialCards.forEach(function (card) {
   placesList.append(cardElement);
 });
 
+function openModal(popup) {
+  popup.classList.add("popup_is-opened");
+}
+
+function closeModal(popup) {
+  popup.classList.remove("popup_is-opened");
+}
+
 const buttonEdit = document.querySelector(".profile__edit-button");
 const popupEdit = document.querySelector(".popup_type_edit");
 buttonEdit.addEventListener("click", function () {
-  popupEdit.classList.add("popup_is-animated");
-  setTimeout(function() {
-    popupEdit.classList.add("popup_is-opened");
-  }, 0);
+  openModal(popupEdit);
 });
 
 const buttonAdd = document.querySelector(".profile__add-button");
 const popupNewCard = document.querySelector(".popup_type_new-card");
 buttonAdd.addEventListener("click", function () {
-  popupNewCard.classList.add("popup_is-animated");
-  setTimeout(function() {
-    popupNewCard.classList.add("popup_is-opened");
-  }, 0);
+  openModal(popupNewCard);
 });
 
 const popups = document.querySelectorAll(".popup");
 popups.forEach(function (popup) {
   popup.addEventListener("click", function (evt) {
     if (evt.target === popup) {
-      popup.classList.remove("popup_is-opened");
+      closeModal(popup);
     }
   });
 
   const popupCloseButton = popup.querySelector(".popup__close");
   popupCloseButton.addEventListener("click", function (evt) {
-    popup.classList.remove("popup_is-opened");
+    closeModal(popup);
   });
 });
 
 document.addEventListener("keydown", function (evt) {
   if (evt.key === "Escape") {
     popups.forEach(function (popup) {
-      popup.classList.remove("popup_is-opened");
+      closeModal(popup);
     });
   }
 });
@@ -105,6 +104,8 @@ function handleFormSubmit(evt) {
 
   profileName.textContent = nameValue;
   profileJob.textContent = jobValue;
+
+  closeModal(popupEdit);
 }
 
 formElement.addEventListener("submit", handleFormSubmit);
@@ -124,7 +125,7 @@ function cardFormSubmit(evt) {
 
   placesList.prepend(newCard);
 
-  popupNewCard.classList.remove("popup_is-opened");
+  closeModal(popupNewCard);
 
   formCard.reset();
 }
