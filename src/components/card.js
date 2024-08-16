@@ -2,8 +2,11 @@ import { cardTemplate } from "../index.js";
 
 function createCard(cardLink, cardName, cardRemover, cardClicker, likePutter) {
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
-  cardElement.querySelector(".card__image").src = cardLink;
-  cardElement.querySelector(".card__title").textContent = cardName;
+  const cardImage = cardElement.querySelector(".card__image");
+  const cardTitle = cardElement.querySelector(".card__title");
+  cardImage.src = cardLink;
+  cardImage.alt = cardName;
+  cardTitle.textContent = cardName;
 
   const deleteButton = cardElement.querySelector(".card__delete-button");
   deleteButton.addEventListener("click", function (evt) {

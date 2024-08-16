@@ -1,11 +1,11 @@
-import { popups } from "../index.js";
-
 function openModal(popup) {
   popup.classList.add("popup_is-opened");
+  document.addEventListener("keydown", escapeKeyListener);
 }
 
 function closeModal(popup) {
   popup.classList.remove("popup_is-opened");
+  document.removeEventListener("keydown", escapeKeyListener);
 }
 
 function popupOverlayClickListener(evt) {
@@ -20,9 +20,10 @@ function popupCloseButtonClickListener(evt) {
 
 function escapeKeyListener(evt) {
   if (evt.key === "Escape") {
-    popups.forEach(function (popup) {
-      closeModal(popup);
-    });
+    const openPopup = document.querySelector(".popup_is-opened");
+    if (openPopup) {
+      closeModal(openPopup);
+    }
   }
 }
 
@@ -31,5 +32,4 @@ export {
   closeModal,
   popupOverlayClickListener,
   popupCloseButtonClickListener,
-  escapeKeyListener,
 };
