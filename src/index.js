@@ -7,6 +7,7 @@ import {
   popupOverlayClickListener,
   popupCloseButtonClickListener,
 } from "./components/modal.js";
+import { enableValidation, clearValidation } from "./components/validation.js";
 
 export const cardTemplate = document.querySelector("#card-template").content;
 const placesList = document.querySelector(".places__list");
@@ -33,6 +34,15 @@ const placeInput = formCard.elements["place-name"];
 const linkInput = formCard.elements.link;
 
 const popups = document.querySelectorAll(".popup");
+
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
 
 function openImagePopup(cardLink, cardName) {
   imagePopup.src = cardLink;
@@ -77,11 +87,16 @@ function submitCardForm(evt) {
 buttonEdit.addEventListener("click", function () {
   nameInput.value = profileName.textContent;
   jobInput.value = profileJob.textContent;
+  clearValidation(formElement, validationConfig);
 
   openModal(popupEdit);
 });
 
 buttonAdd.addEventListener("click", function () {
+  placeInput.value = "";
+  linkInput.value = "";
+  clearValidation(formCard, validationConfig);
+
   openModal(popupNewCard);
 });
 
@@ -106,3 +121,5 @@ initialCards.forEach(function (card) {
   );
   placesList.append(cardElement);
 });
+
+enableValidation(validationConfig);
