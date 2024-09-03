@@ -8,6 +8,12 @@ import {
   popupCloseButtonClickListener,
 } from "./components/modal.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
+import {
+  getUserInfo,
+  getInitialCards,
+  updateUserInfo,
+  postCard,
+} from "./components/api.js";
 
 export const cardTemplate = document.querySelector("#card-template").content;
 const placesList = document.querySelector(".places__list");
@@ -57,10 +63,15 @@ function handlePopupEditFormSubmit(evt) {
   const nameValue = nameInput.value;
   const jobValue = jobInput.value;
 
-  profileName.textContent = nameValue;
-  profileJob.textContent = jobValue;
-
-  closeModal(popupEdit);
+  updateUserInfo(nameValue, jobValue)
+    .then((userInfo) => {
+      profileName.textContent = userInfo.name;
+      profileJob.textContent = userInfo.about;
+      closeModal(popupEdit);
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    });
 }
 
 function submitCardForm(evt) {
@@ -68,6 +79,10 @@ function submitCardForm(evt) {
 
   const placeValue = placeInput.value;
   const linkValue = linkInput.value;
+
+  postCard(linkValue, placeValue).catch((err) => {
+    console.error(`Ошибка: ${err}`);
+  });
 
   const newCard = createCard(
     linkValue,
@@ -111,15 +126,26 @@ popups.forEach(function (popup) {
   popupCloseButton.addEventListener("click", popupCloseButtonClickListener);
 });
 
-initialCards.forEach(function (card) {
-  const cardElement = createCard(
-    card.link,
-    card.name,
-    removeCard,
-    openImagePopup,
-    putLike
-  );
-  placesList.append(cardElement);
-});
+Promise.all([getUserInfo(), getInitialCards()])
+  .then(([userInfo, cards]) => {
+    profileName.textContent = userInfo.name;
+    profileJob.textContent = userInfo.about;
+    const userId = userInfo._id;
+
+    cards.forEach(function (card) {
+      const cardElement = createCard(
+        card.link,
+        card.name,
+        removeCard,
+        openImagePopup,
+        putLike,
+        card.likes
+      );
+      placesList.append(cardElement);
+    });
+  })
+  .catch((err) => {
+    console.error(`Ошибка: ${err}`);
+  });
 
 enableValidation(validationConfig);
