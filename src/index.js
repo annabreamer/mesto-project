@@ -41,6 +41,11 @@ const linkInput = formCard.elements.link;
 
 const popups = document.querySelectorAll(".popup");
 
+const popupConfirm = document.querySelector(".popup_type_confirmation");
+const confirmationButton = popupConfirm.querySelector(".popup__agree");
+
+let cardToDelete, userId;
+
 const validationConfig = {
   formSelector: ".popup__form",
   inputSelector: ".popup__input",
@@ -80,23 +85,29 @@ function submitCardForm(evt) {
   const placeValue = placeInput.value;
   const linkValue = linkInput.value;
 
-  postCard(linkValue, placeValue).catch((err) => {
-    console.error(`Ошибка: ${err}`);
-  });
+  postCard(linkValue, placeValue)
+    .then((card) => {
+      const newCard = createCard(
+        linkValue,
+        placeValue,
+        removeCardWithConfirmation,
+        openImagePopup,
+        putLike,
+        card.likes,
+        card._id,
+        card.owner._id,
+        userId
+      );
 
-  const newCard = createCard(
-    linkValue,
-    placeValue,
-    removeCard,
-    openImagePopup,
-    putLike
-  );
+      placesList.prepend(newCard);
 
-  placesList.prepend(newCard);
+      closeModal(popupNewCard);
 
-  closeModal(popupNewCard);
-
-  formCard.reset();
+      formCard.reset();
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    });
 }
 
 buttonEdit.addEventListener("click", function () {
@@ -130,16 +141,19 @@ Promise.all([getUserInfo(), getInitialCards()])
   .then(([userInfo, cards]) => {
     profileName.textContent = userInfo.name;
     profileJob.textContent = userInfo.about;
-    const userId = userInfo._id;
+    userId = userInfo._id;
 
     cards.forEach(function (card) {
       const cardElement = createCard(
         card.link,
         card.name,
-        removeCard,
+        removeCardWithConfirmation,
         openImagePopup,
         putLike,
-        card.likes
+        card.likes,
+        card._id,
+        card.owner._id,
+        userId
       );
       placesList.append(cardElement);
     });
@@ -149,3 +163,17 @@ Promise.all([getUserInfo(), getInitialCards()])
   });
 
 enableValidation(validationConfig);
+
+function removeCardWithConfirmation(cardElement, cardId) {
+  cardToDelete = { cardElement, cardId };
+  openModal(popupConfirm);
+}
+
+confirmationButton.addEventListener("click", () => {
+  if (cardToDelete) {
+    removeCard(cardToDelete.cardElement, cardToDelete.cardId).then(function () {
+      cardToDelete = null;
+      closeModal(popupConfirm);
+    });
+  }
+});

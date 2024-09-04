@@ -1,4 +1,5 @@
 import { cardTemplate } from "../index.js";
+import { deleteCard } from "./api.js";
 
 function createCard(
   cardLink,
@@ -6,7 +7,10 @@ function createCard(
   cardRemover,
   cardClicker,
   likePutter,
-  likes
+  likes,
+  cardId,
+  userId,
+  currentUserId
 ) {
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const cardImage = cardElement.querySelector(".card__image");
@@ -18,10 +22,14 @@ function createCard(
   cardLikesNumber.textContent = likes.length;
 
   const deleteButton = cardElement.querySelector(".card__delete-button");
-  deleteButton.addEventListener("click", function (evt) {
-    cardRemover(cardElement);
-    evt.stopPropagation();
-  });
+  if (userId === currentUserId) {
+    deleteButton.addEventListener("click", function (evt) {
+      cardRemover(cardElement, cardId);
+      evt.stopPropagation();
+    });
+  } else {
+    deleteButton.remove();
+  }
 
   cardElement.addEventListener("click", function () {
     cardClicker(cardLink, cardName);
@@ -50,8 +58,14 @@ function putLike(evt, cardLikesNumber) {
   evt.stopPropagation();
 }
 
-function removeCard(cardElement) {
-  cardElement.remove();
+function removeCard(cardElement, cardId) {
+  return deleteCard(cardId)
+    .then(() => {
+      cardElement.remove();
+    })
+    .catch((err) => {
+      console.error(`Ошибка: ${err}`);
+    });
 }
 
 export { createCard, putLike, removeCard };
