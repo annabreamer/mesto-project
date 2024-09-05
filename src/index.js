@@ -1,6 +1,6 @@
 import "./pages/index.css";
 import { initialCards } from "./scripts/cards.js";
-import { createCard, putLike, removeCard } from "./components/card.js";
+import { createCard, setLike, removeCard } from "./components/card.js";
 import {
   openModal,
   closeModal,
@@ -92,7 +92,7 @@ function submitCardForm(evt) {
         placeValue,
         removeCardWithConfirmation,
         openImagePopup,
-        putLike,
+        setLike,
         card.likes,
         card._id,
         card.owner._id,
@@ -149,7 +149,7 @@ Promise.all([getUserInfo(), getInitialCards()])
         card.name,
         removeCardWithConfirmation,
         openImagePopup,
-        putLike,
+        setLike,
         card.likes,
         card._id,
         card.owner._id,

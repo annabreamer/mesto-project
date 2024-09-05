@@ -1,5 +1,5 @@
 import { cardTemplate } from "../index.js";
-import { deleteCard } from "./api.js";
+import { deleteCard, putLike, removeLike } from "./api.js";
 
 function createCard(
   cardLink,
@@ -16,10 +16,15 @@ function createCard(
   const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");
   const cardLikesNumber = cardElement.querySelector(".card__likes-number");
+  const likeButton = cardElement.querySelector(".card__like-button");
   cardImage.src = cardLink;
   cardImage.alt = cardName;
   cardTitle.textContent = cardName;
   cardLikesNumber.textContent = likes.length;
+
+  if (likes.some((user) => (user._id === currentUserId))) {
+    likeButton.classList.add("card__like-button_is-active");
+  }
 
   const deleteButton = cardElement.querySelector(".card__delete-button");
   if (userId === currentUserId) {
@@ -35,25 +40,33 @@ function createCard(
     cardClicker(cardLink, cardName);
   });
 
-  const likeButton = cardElement.querySelector(".card__like-button");
   likeButton.addEventListener("click", function (evt) {
-    likePutter(evt, cardLikesNumber);
+    likePutter(evt, cardLikesNumber, cardId);
   });
 
   return cardElement;
 }
 
-function putLike(evt, cardLikesNumber) {
-  evt.target.classList.toggle("card__like-button_is-active");
-  let likeCount = parseInt(cardLikesNumber.textContent);
-
+function setLike(evt, cardLikesNumber, cardId) {
   if (evt.target.classList.contains("card__like-button_is-active")) {
-    likeCount += 1;
+    removeLike(cardId)
+      .then((card) => {
+        evt.target.classList.remove("card__like-button_is-active");
+        cardLikesNumber.textContent = card.likes.length;
+      })
+      .catch((err) => {
+        console.error(`Ошибка: ${err}`);
+      });
   } else {
-    likeCount -= 1;
+    putLike(cardId)
+      .then((card) => {
+        evt.target.classList.add("card__like-button_is-active");
+        cardLikesNumber.textContent = card.likes.length;
+      })
+      .catch((err) => {
+        console.error(`Ошибка: ${err}`);
+      });
   }
-
-  cardLikesNumber.textContent = likeCount;
 
   evt.stopPropagation();
 }
@@ -68,4 +81,4 @@ function removeCard(cardElement, cardId) {
     });
 }
 
-export { createCard, putLike, removeCard };
+export { createCard, setLike, removeCard };
