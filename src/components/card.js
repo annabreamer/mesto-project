@@ -22,7 +22,7 @@ function createCard(
   cardTitle.textContent = cardName;
   cardLikesNumber.textContent = likes.length;
 
-  if (likes.some((user) => (user._id === currentUserId))) {
+  if (likes.some((user) => user._id === currentUserId)) {
     likeButton.classList.add("card__like-button_is-active");
   }
 

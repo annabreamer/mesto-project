@@ -88,3 +88,17 @@ export const removeLike = (cardId) => {
     } else return Promise.reject(`Ошибка: ${res.status}`);
   });
 };
+
+export const editAvatar = (avatar) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: avatar,
+    }),
+  }).then((res) => {
+    if (res.ok) {
+      return res.json();
+    } else return Promise.reject(`Ошибка: ${res.status}`);
+  });
+};

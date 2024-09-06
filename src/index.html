@@ -23,7 +23,23 @@
           <div
             class="profile__image"
             style="background-image: url(<%=require('./images/avatar.jpg')%>)"
-          ></div>
+            alt="Аватар пользователя"
+          >
+            <div class="avatar__overlay">
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 26 26"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M26 3.45351L6.76981 22.7932L3.33585 19.2903L22.517 0L26 3.45351ZM0 26L5.10189 24.4706L1.52075 21.0171L0 26Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
+          </div>
           <div class="profile__info">
             <h1 class="profile__title">Жак-Ив Кусто</h1>
             <button class="profile__edit-button" type="button"></button>
@@ -73,7 +89,7 @@
               />
               <span class="description-input-error popup__error_visible"></span>
             </label>
-            <button type="submit" class="button popup__button">
+            <button type="submit" class="button popup__button button__saving">
               Сохранить
             </button>
           </form>
@@ -110,7 +126,7 @@
               />
               <span class="url-input-error popup__error_visible"></span>
             </label>
-            <button type="submit" class="button popup__button">
+            <button type="submit" class="button popup__button button__saving">
               Сохранить
             </button>
           </form>
@@ -123,12 +139,36 @@
           <p class="popup__caption"></p>
         </div>
       </div>
-      <div class="popup popup_type_confirmation">
+      <div class="popup popup_type_confirmation popup_is-animated">
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Вы уверены?</h3>
-          <button type="button" class="button popup__button popup__agree">Да</button>
+          <button type="button" class="button popup__button popup__agree">
+            Да
+          </button>
         </div>
+      </div>
+    </div>
+    <div class="popup popup_type_avatar popup_is-animated">
+      <div class="popup__content">
+        <button type="button" class="popup__close"></button>
+        <h3 class="popup__title">Обновить аватар</h3>
+        <form class="popup__form" name="edit-avatar" novalidate>
+          <label class="form__field">
+            <input
+              type="url"
+              id="avatar-input"
+              name="link"
+              class="popup__input"
+              placeholder="Ссылка на аватар"
+              required
+            />
+            <span class="avatar-input-error popup__error_visible"></span>
+          </label>
+          <button type="submit" class="button popup__button button__saving">
+            Сохранить
+          </button>
+        </form>
       </div>
     </div>
 

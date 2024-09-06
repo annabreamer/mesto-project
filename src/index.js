@@ -13,6 +13,7 @@ import {
   getInitialCards,
   updateUserInfo,
   postCard,
+  editAvatar,
 } from "./components/api.js";
 
 export const cardTemplate = document.querySelector("#card-template").content;
@@ -31,6 +32,7 @@ const popupNewCard = document.querySelector(".popup_type_new-card");
 const formElement = document.forms["edit-profile"];
 const nameInput = formElement.elements.name;
 const jobInput = formElement.elements.description;
+const saveProfileButton = formElement.querySelector(".popup__button");
 
 const profileName = document.querySelector(".profile__title");
 const profileJob = document.querySelector(".profile__description");
@@ -38,11 +40,19 @@ const profileJob = document.querySelector(".profile__description");
 const formCard = document.forms["new-place"];
 const placeInput = formCard.elements["place-name"];
 const linkInput = formCard.elements.link;
+const saveCardButton = formCard.querySelector(".popup__button");
 
 const popups = document.querySelectorAll(".popup");
 
 const popupConfirm = document.querySelector(".popup_type_confirmation");
 const confirmationButton = popupConfirm.querySelector(".popup__agree");
+
+const popupAvatar = document.querySelector(".popup_type_avatar");
+const formAvatar = document.forms["edit-avatar"];
+const avatarInput = formAvatar.elements.link;
+const profileImage = document.querySelector(".profile__image");
+const avatarEditIcon = document.querySelector(".avatar__overlay");
+const saveAvatarButton = formAvatar.querySelector(".popup__button");
 
 let cardToDelete, userId;
 
@@ -67,6 +77,7 @@ function handlePopupEditFormSubmit(evt) {
 
   const nameValue = nameInput.value;
   const jobValue = jobInput.value;
+  setButtonText(saveProfileButton, true);
 
   updateUserInfo(nameValue, jobValue)
     .then((userInfo) => {
@@ -75,7 +86,9 @@ function handlePopupEditFormSubmit(evt) {
       closeModal(popupEdit);
     })
     .catch((err) => {
-      console.error(`Ошибка: ${err}`);
+      console.error(`Ошибка: ${err}`).finally(() => {
+        setButtonText(saveProfileButton, false);
+      });
     });
 }
 
@@ -84,6 +97,7 @@ function submitCardForm(evt) {
 
   const placeValue = placeInput.value;
   const linkValue = linkInput.value;
+  setButtonText(saveCardButton, true);
 
   postCard(linkValue, placeValue)
     .then((card) => {
@@ -107,6 +121,9 @@ function submitCardForm(evt) {
     })
     .catch((err) => {
       console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      setButtonText(saveCardButton, false);
     });
 }
 
@@ -141,6 +158,7 @@ Promise.all([getUserInfo(), getInitialCards()])
   .then(([userInfo, cards]) => {
     profileName.textContent = userInfo.name;
     profileJob.textContent = userInfo.about;
+    profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
     userId = userInfo._id;
 
     cards.forEach(function (card) {
@@ -177,3 +195,36 @@ confirmationButton.addEventListener("click", () => {
     });
   }
 });
+
+avatarEditIcon.addEventListener("click", () => {
+  openModal(popupAvatar);
+});
+
+formAvatar.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const avatar = avatarInput.value;
+  setButtonText(saveAvatarButton, true);
+
+  editAvatar(avatar)
+    .then((data) => {
+      profileImage.style.backgroundImage = `url(${data.avatar})`;
+      closeModal(popupAvatar);
+      formAvatar.reset();
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      setButtonText(saveAvatarButton, false);
+    });
+});
+
+function setButtonText(button, isLoading) {
+  if (isLoading) {
+    button.textContent = "Сохранение...";
+    button.classList.add("button_saving");
+  } else {
+    button.textContent = "Сохранить";
+    button.classList.remove("button_saving");
+  }
+}
