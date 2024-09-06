@@ -1,5 +1,4 @@
 import "./pages/index.css";
-import { initialCards } from "./scripts/cards.js";
 import { createCard, setLike, removeCard } from "./components/card.js";
 import {
   openModal,
@@ -16,7 +15,7 @@ import {
   editAvatar,
 } from "./components/api.js";
 
-export const cardTemplate = document.querySelector("#card-template").content;
+const cardTemplate = document.querySelector("#card-template").content;
 const placesList = document.querySelector(".places__list");
 
 const popupImage = document.querySelector(".popup_type_image");
@@ -86,9 +85,10 @@ function handlePopupEditFormSubmit(evt) {
       closeModal(popupEdit);
     })
     .catch((err) => {
-      console.error(`Ошибка: ${err}`).finally(() => {
-        setButtonText(saveProfileButton, false);
-      });
+      console.error(`Ошибка: ${err}`);
+    })
+    .finally(() => {
+      setButtonText(saveProfileButton, false);
     });
 }
 
@@ -102,6 +102,7 @@ function submitCardForm(evt) {
   postCard(linkValue, placeValue)
     .then((card) => {
       const newCard = createCard(
+        cardTemplate,
         linkValue,
         placeValue,
         removeCardWithConfirmation,
@@ -163,6 +164,7 @@ Promise.all([getUserInfo(), getInitialCards()])
 
     cards.forEach(function (card) {
       const cardElement = createCard(
+        cardTemplate,
         card.link,
         card.name,
         removeCardWithConfirmation,
@@ -189,10 +191,14 @@ function removeCardWithConfirmation(cardElement, cardId) {
 
 confirmationButton.addEventListener("click", () => {
   if (cardToDelete) {
-    removeCard(cardToDelete.cardElement, cardToDelete.cardId).then(function () {
-      cardToDelete = null;
-      closeModal(popupConfirm);
-    });
+    removeCard(cardToDelete.cardElement, cardToDelete.cardId)
+      .then(function () {
+        cardToDelete = null;
+        closeModal(popupConfirm);
+      })
+      .catch((err) => {
+        console.error(`Ошибка: ${err}`);
+      });
   }
 });
 
@@ -209,7 +215,6 @@ formAvatar.addEventListener("submit", (event) => {
     .then((data) => {
       profileImage.style.backgroundImage = `url(${data.avatar})`;
       closeModal(popupAvatar);
-      formAvatar.reset();
     })
     .catch((err) => {
       console.log(err);

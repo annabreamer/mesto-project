@@ -1,7 +1,7 @@
-import { cardTemplate } from "../index.js";
 import { deleteCard, putLike, removeLike } from "./api.js";
 
 function createCard(
+  cardTemplate,
   cardLink,
   cardName,
   cardRemover,
@@ -72,13 +72,9 @@ function setLike(evt, cardLikesNumber, cardId) {
 }
 
 function removeCard(cardElement, cardId) {
-  return deleteCard(cardId)
-    .then(() => {
-      cardElement.remove();
-    })
-    .catch((err) => {
-      console.error(`Ошибка: ${err}`);
-    });
+  return deleteCard(cardId).then(() => {
+    cardElement.remove();
+  });
 }
 
 export { createCard, setLike, removeCard };
