@@ -1,5 +1,5 @@
 # Project "Mesto"
-[https://github.com/annabreamer/ono-tebe-nado](https://annabreamer.github.io/mesto-project/)
+https://annabreamer.github.io/mesto-project/
 ## Overview
 This project is an interactive photo-sharing service built with JavaScript. I implemented dynamic card creation and deletion, modal windows for profile editing, card addition, and photo preview, as well as like actions on cards. The code is modularized using ES6 modules and bundled with Webpack, ensuring a maintainable and responsive application.
 
